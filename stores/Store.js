@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx"
-import { Helper } from "./helper"
+import { Axi, Helper } from "./helper"
 
 class RootStore {
     static instance = this.instance || new RootStore()
@@ -17,35 +17,43 @@ class RootStore {
         makeAutoObservable(this)
     }
 
-    fakeAuth = () => {
-        this.user = {
-            name: 'Sasha Gray',
-            email: 'sasha@gray.me',
-            email_confirmed: false,
-            is_therapist: false,
-        };
-        this.token = 'FAKE_TOKEN';
-    }
-
-    load = async () => {
-        const token = await Helper.getToken();
-        if (token) {
-            this.user = await Helper.getUser(token);
-            this.token = token;
+    fakeAuth = (props) => {
+        if (props) {
+            console.log('props', props)
+            this.user = props;
+            //this.token = props.access_token;
+        } else {
+            this.user = {
+                name: 'Sasha Gray',
+                email: 'sasha@gray.me',
+                email_confirmed: false,
+                is_therapist: false,
+            };
+            this.token = 'FAKE_TOKEN';
         }
     }
 
+    load = async () => {
+
+    }
+
     userAuth = async (props) => {
-        console.info(props)
+        //sasha@gray.me 123
+        let result = await Axi.post('/login', props);
+        console.log('authResult:', result);
+        if (result.status === 200) {
+            this.fakeAuth(result.data)
+        }
+        return result;
     }
 
     userRestore = async (props) => {
-        console.info(props)
+        return await Axi.put('/reset_password', props);
     }
 
     userRegister = async (props) => {
-        console.info(props)
-        return 'Some error'
+        let result = await Axi.post('/user', props);
+        return result
     }
 }
 

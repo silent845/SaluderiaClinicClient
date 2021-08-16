@@ -4,6 +4,7 @@ import { COLORS } from '../components/Styles'
 import Store from '../stores/Store'
 
 const ScreenAuth = ({ navigation }) => {
+    const [error, setError] = useState(null)
     const [email, setEmail] = useState('sasha@gray.me')
     const [password, setPassword] = useState('')
 
@@ -12,7 +13,8 @@ const ScreenAuth = ({ navigation }) => {
     }
 
     const handleLogin = async () => {
-        await Store.userAuth({ email, password });
+        let authError = await Store.userAuth({ email, password });
+        if (authError) setError(authError);
     }
 
     return (
@@ -27,6 +29,7 @@ const ScreenAuth = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
             />
+            {error ? (<Text style={{ color: COLORS.ERROR, }}>{error.message}</Text>) : <Text></Text>}
 
             <Button title='Login' color={COLORS.ACCENT} onPress={handleLogin} />
             <Button title='Fake Auth' color='red' onPress={Store.fakeAuth} />

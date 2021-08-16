@@ -4,7 +4,7 @@ export const COLORS = {
     ACCENT: '#00adbb',
     TEXT: '#474747',
     INACTIVE: '#8ecae6',
-    ERROR: 'tomato',
+    ERROR: '#ff402e',
 }
 
 export const STYLES = StyleSheet.create({
