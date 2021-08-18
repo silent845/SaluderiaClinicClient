@@ -1,17 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { COLORS } from './components/Styles';
 import NavSelector from './navigation/NavSelector';
 import Store from './stores/Store';
 
 export default function App() {
-  Store.load()
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await Store.prepare();
+      } catch (error) {
+        console.warn(error)
+      } finally {
+        setReady(true);
+      }
+    }
+    prepare();
+  }, [])
 
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" backgroundColor={COLORS.ACCENT} />
+      <StatusBar style="auto" backgroundColor={COLORS.ACCENT} animated={true} translucent={false} />
       <NavSelector />
     </SafeAreaView>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, Button, TextInput } from 'react-native'
 import { COLORS } from '../components/Styles'
+import { Axi } from '../stores/helper'
 import Store from '../stores/Store'
 
 const ScreenAuth = ({ navigation }) => {
@@ -13,8 +14,15 @@ const ScreenAuth = ({ navigation }) => {
     }
 
     const handleLogin = async () => {
-        let authError = await Store.userAuth({ email, password });
-        if (authError) setError(authError);
+        let res = null;
+        try {
+            res = await Axi.post('/login', { email, password });
+            if (res.status === 200) {
+                Store.fakeAuth(res.data);
+            }
+        } catch (err) {
+            setError(err);
+        }
     }
 
     return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, Button } from 'react-native'
 import { COLORS, STYLES } from '../components/Styles'
+import { Axi } from '../stores/helper'
 import Store from '../stores/Store'
 
 const ScreenAuthRegister = () => {
@@ -10,7 +11,15 @@ const ScreenAuthRegister = () => {
     const [password, setPassword] = useState('')
 
     const handleSubmit = async () => {
-        setError(await Store.userRegister({ email, name, password }))
+        let res = null;
+        try {
+            res = await Axi.post('/user', { email, name, password });
+            if (res.status === 200) {
+                Store.fakeAuth(res.data);
+            }
+        } catch (err) {
+            setError(err)
+        }
     }
 
     return (

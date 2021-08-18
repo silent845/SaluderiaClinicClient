@@ -2,15 +2,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-export const Helper = {
+export const HelperStorage = {
     getToken: async () => {
-        return await SecureStore.getItemAsync('user_token')
+        return await SecureStore.getItemAsync('user_token');
     },
-    setToken: async ({ token }) => {
-        await SecureStore.setItemAsync('user_token', token)
+    setToken: async (token) => {
+        try {
+            await SecureStore.setItemAsync('user_token', token);
+
+        } catch (error) {
+            console.warn(error.message)
+        }
     },
-    getUser: async ({ token }) => {
-        return await AsyncStorage.getItem('@user')
+
+    setStorageValue: async (key, value) => {
+        await AsyncStorage.setItem(key, value);
+    },
+    getStorageValue: async (key) => {
+        return await AsyncStorage.getItem(key);
+    },
+    cleanStorage: async () => {
+        await AsyncStorage.clear();
+        await SecureStore.deleteItemAsync('user_token');
     }
 }
 
@@ -27,10 +40,12 @@ export const Axi = axios.create({
 Axi.interceptors.response.use(response => {
     return response;
 }, error => {
+    console.log(error);
+
     return Promise.reject(
         {
-            'message': error.response.data.message,
-            'status': error.response.status
+            'message': error.response?.data.message,
+            'status': error.response?.status
         }
     );
 })
